@@ -24,9 +24,9 @@ class ParamConfig:
         ## path
         self.data_folder ='../../Data'
         self.feat_fold = feat_folder
-        self.original_train_data_path = "%s/train_drop_constant.csv"% self.data_folder
-        self.original_test_data_path = "%s/test_a_drop_constant.csv"% self.data_folder
-        self.original_test_data2_path = "%s/test_b_drop_constant.csv"% self.data_folder
+        self.original_train_data_path = "%s/train_non_missing.csv"% self.data_folder
+        self.original_test_data_path = "%s/test_a_non_missing.csv"% self.data_folder
+        self.original_test_data2_path = "%s/test_b_non_missing.csv"% self.data_folder
 
 
 
