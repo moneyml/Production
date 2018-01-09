@@ -111,8 +111,8 @@ def FeatList(featSlected,bins=5):
 
 #featSelected = fs.feat_combination([predictors_rf],500)
 #featSelected = fs.feat_combination([predictors_pear],1000)
-featSelected_list = FeatList(fs.feat_combination([predictors_rf],2000))
-featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],2000))
+featSelected_list = FeatList(fs.feat_combination([predictors_rf],1500))
+featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500))
 
 
 
@@ -127,7 +127,7 @@ print("run model")
 n_splits = 5
 early_stop =50
 ins_rmse = 0.01
-test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
+#test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
 
 model_round = 0
 for featSelected in featSelected_list:
@@ -156,14 +156,14 @@ print("Done")
 ###############
 print("get submission")
 
-other_note ='_ensemble_100'
+other_note ='_ensemble_1500'
 result['score']=result[['Score_%d'%i for i in range(1,n_splits+1)]].mean(axis=1)
 submit = result[['ID','score']]
 today = datetime.date.today().strftime('%Y-%m-%d')
 result.to_csv('../Submission/result/result_%s'%today+other_note+'.csv',index=False)
 submit.to_csv('../Submission/submit_%s'%today+other_note+'.csv',header=False,index=False)
 test_result.to_csv('../Submission/test/test_result_%s'%today+other_note+'.csv',index=False)
-imp.to_csv('../Submission/imp/importance_%s'%today+other_note+'.csv',index=False)
+#imp.to_csv('../Submission/imp/importance_%s'%today+other_note+'.csv',index=False)
 
 
 
