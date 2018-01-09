@@ -7,7 +7,7 @@ Created on Sat Jan  6 14:49:46 2018
 
 import pandas as pd
 import numpy as np
-#from minepy import MINE
+from minepy import MINE
 from sklearn.ensemble import RandomForestRegressor 
 
 
