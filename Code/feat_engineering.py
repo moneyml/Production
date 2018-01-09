@@ -82,8 +82,12 @@ def var_minus(dataset,var_list,keep_list = [],criteria=0.8):
     return dataset[keep_list]
 
 
-def 
-
+def sim_group(dataset,var_list):
+    range_df = pd.DataFrame({'min':dataset[var_list].min(),'max':dataset[var_list].max()},index=var_list)
+    range_df.sort_values(['max','min'],inplace=True)
+    range_df['range'] = 1
+    tmp = range_df.groupby(['max','min'])['range'].sum()
+    tmp.reset_index(inplace=True) 
 
 
 

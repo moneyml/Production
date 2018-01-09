@@ -8,6 +8,7 @@ Created on Wed Dec 13 12:49:36 2017
 import sys
 #import cPickle
 import numpy as np
+from sklearn import metrics
 import pandas as pd
 #from nlp_utils import clean_text, pos_tag_text
 sys.path.append("../")
@@ -15,6 +16,7 @@ from param_config import config
 import datetime
 import model_ml
 import feat_selection as fs
+
 
 
 ###############
@@ -91,29 +93,43 @@ predictors_rf = fs.RF_selection(dfTrain,predictors)
 print('RF Done')
 predictors_pear = fs.Pearson_selection(dfTrain,predictors)
 print('Pearson Done')
-#predictors_mic = fs.MIC_selection(dfTrain,predictors)
-#print('MIC Done')
+predictors_mic = fs.MIC_selection(dfTrain,predictors)
+print('MIC Done')
 
 
-def FeatList(featSlected,bins=5):
+def FeatList(featSlected,bins=5,random_pick=False):
     output = [[] for i in range(bins)]
+    featTmp = featSlected.copy()
     i = 0
-    while i<=len(featSlected)-1:
-        for j in range(bins):
-            try:
-                output[j].append(featSlected[i+j])
-            except:
-                break
-        i += bins
+    if random_pick:
+        while len(featTmp)>=1:
+            for j in range(bins):
+                try:
+                    pick = random.sample(featTmp,1)[0]
+                except:
+                    break
+                output[j].append(pick)
+                featTmp.remove(pick)
+
+    else:    
+        while i<=len(featSlected)-1:
+            for j in range(bins):
+                try:
+                    output[j].append(featTmp[i+j])
+                except:
+                    break
+            i += bins
     return output
 
 
 
 #featSelected = fs.feat_combination([predictors_rf],500)
 #featSelected = fs.feat_combination([predictors_pear],1000)
-featSelected_list = FeatList(fs.feat_combination([predictors_rf],2000))
-featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],2000))
-
+featSelected_list = FeatList(fs.feat_combination([predictors_rf],1500))
+featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500))
+featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
+featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
+#featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_mic],1500))
 
 
 print("Done")
@@ -127,7 +143,7 @@ print("run model")
 n_splits = 5
 early_stop =50
 ins_rmse = 0.01
-test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
+#test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
 
 model_round = 0
 for featSelected in featSelected_list:
@@ -144,6 +160,10 @@ for featSelected in featSelected_list:
 
 
 
+for i in range(1,ensembleTrain.shape[1]-1):
+    print(metrics.mean_squared_error(ensembleTrain['Y'], ensembleTrain['score_%d'%i]))
+    
+    
 test_result,result =  model_ml.linear_kfold(ensembleTrain,ensemblePred,[i for i in ensembleTrain.columns if 'score_' in i],n_splits=n_splits)
 
 
@@ -156,7 +176,7 @@ print("Done")
 ###############
 print("get submission")
 
-other_note ='_ensemble_100'
+other_note ='_ensemble_random_rf_pea'
 result['score']=result[['Score_%d'%i for i in range(1,n_splits+1)]].mean(axis=1)
 submit = result[['ID','score']]
 today = datetime.date.today().strftime('%Y-%m-%d')
