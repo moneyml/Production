@@ -7,6 +7,7 @@ Created on Thu Dec 28 13:35:17 2017
 
 import pandas as pd
 import numpy as np
+import random
 
 
 
@@ -88,7 +89,6 @@ def sim_group(dataset,var_list):
     range_df['range'] = 1
     tmp = range_df.groupby(['max','min'])['range'].sum()
     tmp.reset_index(inplace=True) 
-
 
 
 
