@@ -97,38 +97,17 @@ predictors_mic = fs.MIC_selection(dfTrain,predictors)
 print('MIC Done')
 
 
-def FeatList(featSlected,bins=5,random_pick=False):
-    output = [[] for i in range(bins)]
-    featTmp = featSlected.copy()
-    i = 0
-    if random_pick:
-        while len(featTmp)>=1:
-            for j in range(bins):
-                try:
-                    pick = random.sample(featTmp,1)[0]
-                except:
-                    break
-                output[j].append(pick)
-                featTmp.remove(pick)
 
-    else:    
-        while i<=len(featSlected)-1:
-            for j in range(bins):
-                try:
-                    output[j].append(featTmp[i+j])
-                except:
-                    break
-            i += bins
-    return output
 
 
 
 #featSelected = fs.feat_combination([predictors_rf],500)
 #featSelected = fs.feat_combination([predictors_pear],1000)
-featSelected_list = FeatList(fs.feat_combination([predictors_rf],1500))
-featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500))
-featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
-featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
+featSelected_list = fs.FeatList(fs.feat_combination([predictors_rf],600),3)
+featSelected_list = featSelected_list + fs.FeatList(fs.feat_combination([predictors_pear],600),3)
+
+#featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
+#featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
 #featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_mic],1500))
 
 
@@ -183,7 +162,7 @@ today = datetime.date.today().strftime('%Y-%m-%d')
 result.to_csv('../Submission/result/result_%s'%today+other_note+'.csv',index=False)
 submit.to_csv('../Submission/submit_%s'%today+other_note+'.csv',header=False,index=False)
 test_result.to_csv('../Submission/test/test_result_%s'%today+other_note+'.csv',index=False)
-imp.to_csv('../Submission/imp/importance_%s'%today+other_note+'.csv',index=False)
+#imp.to_csv('../Submission/imp/importance_%s'%today+other_note+'.csv',index=False)
 
 
 

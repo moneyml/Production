@@ -7,7 +7,8 @@ Created on Sat Jan  6 14:49:46 2018
 
 import pandas as pd
 import numpy as np
-from minepy import MINE
+#from minepy import MINE
+import random
 from sklearn.ensemble import RandomForestRegressor 
 
 
@@ -58,6 +59,29 @@ def feat_combination(predistor_lists = [],top_n = 1000):
             
 
 
+def FeatList(featSlected,bins=5,random_pick=False):
+    output = [[] for i in range(bins)]
+    featTmp = featSlected.copy()
+    i = 0
+    if random_pick:
+        while len(featTmp)>=1:
+            for j in range(bins):
+                try:
+                    pick = random.sample(featTmp,1)[0]
+                except:
+                    break
+                output[j].append(pick)
+                featTmp.remove(pick)
+
+    else:    
+        while i<=len(featSlected)-1:
+            for j in range(bins):
+                try:
+                    output[j].append(featTmp[i+j])
+                except:
+                    break
+            i += bins
+    return output
 
 
 

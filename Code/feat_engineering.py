@@ -7,6 +7,7 @@ Created on Thu Dec 28 13:35:17 2017
 
 import pandas as pd
 import numpy as np
+import random
 
 
 
@@ -100,7 +101,6 @@ def sim_group(dataset,var_list):
             base_list.remove(var)
     
     
-
 
 
 
