@@ -37,7 +37,7 @@ print("Done.")
 ###############
 
 print("Load Features")
-Feat_file = ['Feat_cnt_col_nonmissing','Feat_cnt_tool_nonmissing','Feat_pcent_col_nonmissing','Feat_pcent_tool_nonmissing','All_minus','group_var_std','All_minus_single_col','All_minus_byother_col']
+Feat_file = ['Feat_cnt_col_nonmissing','Feat_cnt_tool_nonmissing','Feat_pcent_col_nonmissing','Feat_pcent_tool_nonmissing','All_minus','group_var','All_minus_single_col','All_minus_byother_col']
 ex_feat = []
 for filename in Feat_file:
     if filename == 'Feat_minus_non_missing':
@@ -122,12 +122,14 @@ print("run model")
 n_splits = 5
 early_stop =50
 ins_rmse = 0.01
+params = {'max_depth':3, 'eta':0.01, 'silent':0,'objective':'reg:linear','lambda':1,'subsample':0.8,
+                         'colsample_bytree':0.8,'eval_metric':'mae'}
 #test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
 
 model_round = 0
 for featSelected in featSelected_list:
     model_round+=1
-    test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
+    test_result,result,imp = model_ml.xgb_kfold(dfTrain,dfPred,featSelected,params=params,n_splits=n_splits,early_stop=early_stop,ins_rmse = ins_rmse)
     test_result = test_result.rename(columns={'score':'score_%d'%model_round,'target':'Y'})
     result['score_%d'%model_round]=result[['Score_%d'%i for i in range(1,n_splits+1)]].mean(axis=1)
     if model_round==1:
@@ -146,6 +148,12 @@ for i in range(1,ensembleTrain.shape[1]-1):
 test_result,result =  model_ml.linear_kfold(ensembleTrain,ensemblePred,[i for i in ensembleTrain.columns if 'score_' in i],n_splits=n_splits)
 
 
+test_result,result =  model_ml.simple_avg(ensembleTrain,ensemblePred,[i for i in ensembleTrain.columns if 'score_' in i])
+test_result,result =  model_ml.simple_avg(ensembleTrain,ensemblePred,[i for i in ensembleTrain.columns if 'score_' in i],True)
+
+print(result.min())
+print(result.iloc[61,:])
+'''
 print("Done")
 
 
@@ -155,7 +163,11 @@ print("Done")
 ###############
 print("get submission")
 
+<<<<<<< HEAD
 other_note ='_ensemble_247'
+=======
+other_note ='_ensemble_rf_pear_newgrp_mae'
+>>>>>>> 436fb753a63a0d134e254401cc2a798647f79b46
 result['score']=result[['Score_%d'%i for i in range(1,n_splits+1)]].mean(axis=1)
 submit = result[['ID','score']]
 today = datetime.date.today().strftime('%Y-%m-%d')
@@ -164,11 +176,11 @@ submit.to_csv('../Submission/submit_%s'%today+other_note+'.csv',header=False,ind
 test_result.to_csv('../Submission/test/test_result_%s'%today+other_note+'.csv',index=False)
 #imp.to_csv('../Submission/imp/importance_%s'%today+other_note+'.csv',index=False)
 
-
+#'''
 
 print("Done")
 
-
-
+import matplotlib.pyplot as plt
+plt.hist(result['score'], facecolor='red')
 
 

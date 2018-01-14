@@ -42,8 +42,12 @@ def xgb_kfold(dfTrain,dfPred,predictors,n_splits=5,weight = 1,early_stop = 10,in
         evallist  = [(dtrain,'train'),(dtest,'eval')]  
         num_round = 5000
         evals_dict = {}
+        if 'eval_metric' in params:
+            metric = params['eval_metric']
+        else:
+            metric ='rmse'
         model = xgb.train(param,dtrain,num_round, evallist,early_stopping_rounds=early_stop,evals_result=evals_dict,verbose_eval =100)
-        performance_df = pd.DataFrame({'train':evals_dict['train']['rmse'],'eval':evals_dict['eval']['rmse']})
+        performance_df = pd.DataFrame({'train':evals_dict['train'][metric],'eval':evals_dict['eval'][metric]})
         performance_df =performance_df.loc[performance_df['train']>=ins_rmse]
         #bst_tree = len(performance_df)-1-early_stop
         bst_tree = performance_df.loc[performance_df['eval']==performance_df['eval'].min()].index.tolist()[0] + 1
@@ -125,6 +129,24 @@ def linear_kfold(dfTrain,dfPred,predictors,n_splits=5):
     print("Test MSE:",metrics.mean_squared_error(test_result['target'], test_result['score']))
     return test_result,result
 
+def simple_avg(dfTrain,dfPred,predictors,weight=False):
+    test_result = dfTrain.copy()
+    result = dfPred.copy()
+    if weight:
+        weightList = []
+        for var in predictors:
+            weightList.append(1/metrics.mean_squared_error(test_result['Y'], test_result[var]))
+        weightList =np.array(weightList)
+        weightList = len(predictors)*weightList/weightList.sum()
+        for i in range(len(predictors)):
+            test_result[predictors[i]] = test_result[predictors[i]]*weightList[i]
+            result[predictors[i]] = result[predictors[i]]*weightList[i]
+    
+    test_result['score'] = test_result[predictors].mean(axis=1)
+    result['score'] = result[predictors].mean(axis=1)
+    print("Test MSE:",metrics.mean_squared_error(test_result['Y'], test_result['score']))
+    return test_result,result[['ID','score']]
+    
 
 
 
