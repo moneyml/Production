@@ -93,7 +93,7 @@ predictors_rf = fs.RF_selection(dfTrain,predictors)
 print('RF Done')
 predictors_pear = fs.Pearson_selection(dfTrain,predictors)
 print('Pearson Done')
-predictors_mic = fs.MIC_selection(dfTrain,predictors)
+#predictors_mic = fs.MIC_selection(dfTrain,predictors)
 print('MIC Done')
 
 
@@ -103,8 +103,8 @@ print('MIC Done')
 
 #featSelected = fs.feat_combination([predictors_rf],500)
 #featSelected = fs.feat_combination([predictors_pear],1000)
-featSelected_list = fs.FeatList(fs.feat_combination([predictors_rf],600),3)
-featSelected_list = featSelected_list + fs.FeatList(fs.feat_combination([predictors_pear],600),3)
+featSelected_list = fs.FeatList(fs.feat_combination([predictors_rf],1500))
+featSelected_list = featSelected_list + fs.FeatList(fs.feat_combination([predictors_pear],1500))
 
 #featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
 #featSelected_list = featSelected_list + FeatList(fs.feat_combination([predictors_pear],1500),random_pick=True)
@@ -155,7 +155,7 @@ print("Done")
 ###############
 print("get submission")
 
-other_note ='_ensemble_random_rf_pea'
+other_note ='_ensemble_247'
 result['score']=result[['Score_%d'%i for i in range(1,n_splits+1)]].mean(axis=1)
 submit = result[['ID','score']]
 today = datetime.date.today().strftime('%Y-%m-%d')
